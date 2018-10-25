@@ -38,8 +38,9 @@
 /* General sidebar styles */
 .bm-menu {
   background: #373a47;
-  padding: 2.5em 1.5em 0;
+  padding: 2.5em 0 0;
   font-size: 1.15em;
+  width: 100%;
 }
 
 /* Morph shape necessary with bubble or elastic */
@@ -50,7 +51,8 @@
 /* Wrapper for item list */
 .bm-item-list {
   color: #b8b7ad;
-  padding: 0.8em;
+  padding: 0;
+  width: 100%;
 }
 
 /* Individual item */
@@ -77,4 +79,17 @@
 .App-header h1 {
   top: 0;
   font-size: 36px;
+}
+
+.list-item {
+  font-size: 15px;
+  padding: 15px;
+  border-width: 0.5px 1px 0px 1px;
+  border-style: solid;
+  border-color: #dfe748;
+}
+
+
+div.list-item:last-child {
+  border-bottom: 1px solid #dfe748;
 }
