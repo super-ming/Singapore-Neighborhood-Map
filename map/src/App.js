@@ -18,12 +18,12 @@ class App extends Component {
       <div className="App">
         <header className="App-header">
           <h1>Neighborhood Map</h1>
-          <Menu noOverlay className={"burger-menu"} width={300}>
-            <MapList className={"map-list"} places={places}/>
+          <Menu noOverlay className="burger-menu" width={300}>
+            <MapList className="map-list" places={places}/>
           </Menu>
         </header>
         <main>
-          <MarkerMap ref='map' className={"map"} places={places}/>
+          <MarkerMap ref='map' className="map" places={places}/>
         </main>
       </div>
     );

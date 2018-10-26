@@ -73,14 +73,15 @@ class MarkerMap extends Component {
   render() {
     console.log(this.props.google);
     console.log(this.state.activeMarker);
+    const locations = this.props.places;
     return (
       <Map google={this.props.google} onClick={this.onMapClicked}
-      initialCenter={{lat:1.280747, lng:103.844578}} zoom={14}>
-        { this.props.places.map((marker, index) =>
+      initialCenter={{lat:1.290604, lng:103.846473}} zoom={14}>
+        { locations.map((marker, index) =>
           <Marker key={index} onClick={this.onMarkerClick}
                     name={marker.name} position={{lat: marker.lat, lng: marker.lng}}
                     animation={(Object.keys(this.state.activeMarker).length !== 0) ? ((this.state.activeMarker.name === marker.name) ? 1 : 0) : 2}
-                    className={"marker"} />
+                    className="marker" />
         )}
         <InfoWindow marker={this.state.activeMarker}
           visible={this.state.showingInfoWindow}
