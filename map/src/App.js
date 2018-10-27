@@ -2,10 +2,61 @@ import React, { Component } from 'react';
 import './App.css';
 import './Styles/burgermenu.css';
 import { slide as Menu } from 'react-burger-menu';
-import MarkerMap from './Components/map'
+import Map from './Components/map'
 import MapList from './Components/maplist'
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      places: [],
+      results: [],
+      query: ""
+    }
+
+  }
+  updateQuery = (input) => {
+    //no guarantee that setState will update the component immediately
+    //this.filterMarkers executes once setState is completed
+    //setState can only take one callback, so make one function and call
+    //multiple functions within if needed
+    this.setState({query: input}, this.filterAll);
+  }
+
+  filterList() {
+    /*if(query === '' || query === undefined) {
+      return this.setState({ results: [] });
+    }*/
+    const queryUpperCase = this.state.query.toUpperCase();
+    const items = document.querySelectorAll(".list-item");
+    items.forEach(item => {
+      //if text entered matches item from list, show item. If not, hide the item.
+      if (item.innerHTML.toUpperCase().indexOf(queryUpperCase) > -1) {
+        item.style.display = "";
+      } else {
+        item.style.display = "none";
+      }
+    })
+  }
+
+  filterMap() {
+    const markers = document.querySelectorAll(".marker");
+    const queryUpperCase = this.state.query.toUpperCase();
+    markers.forEach(marker => {
+      if (marker.innerHTML.toUpperCase().indexOf(queryUpperCase) > -1) {
+        marker.style.display = "";
+      } else {
+        marker.style.display = "none";
+      }
+    })
+
+  }
+
+  filterAll(){
+    this.filterList();
+    this.filterMap();
+  }
+
   render() {
     const places = [
           {name: "Famous Crispy Curry Puff", lat: 1.279088, lng: 103.846591, placeId: "ChIJ642LmRIZ2jERkz20c4ECaYw"},
@@ -19,11 +70,12 @@ class App extends Component {
         <header className="App-header">
           <h1>Neighborhood Map</h1>
           <Menu noOverlay className="burger-menu" width={300}>
-            <MapList className="map-list" places={places}/>
+            <MapList className="map-list" places={places} updateQuery={this.updateQuery.bind(this)}
+            query={this.state.query} />
           </Menu>
         </header>
         <main>
-          <MarkerMap ref='map' className="map" places={places}/>
+          <Map ref='map' className="map" places={places}/>
         </main>
       </div>
     );
