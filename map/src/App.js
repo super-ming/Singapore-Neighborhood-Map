@@ -4,16 +4,22 @@ import './Styles/burgermenu.css';
 import { slide as Menu } from 'react-burger-menu';
 import Map from './Components/map'
 import MapList from './Components/maplist'
+import ReactDOM from 'react-dom'
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       places: [],
-      results: [],
-      query: ""
+      markerObjects: [],
+      query: "",
+      showingInfoWindow: false,
+      activeMarker: {},
+      selectedPlace: {},
+      dropAnimation: true,
+      showingMarker: true,
+      placesOnList: []
     }
-
   }
   updateQuery = (input) => {
     //no guarantee that setState will update the component immediately
@@ -29,13 +35,24 @@ class App extends Component {
     }*/
     const queryUpperCase = this.state.query.toUpperCase();
     const items = document.querySelectorAll(".list-item");
+    let visiblePlaces = [];
     items.forEach(item => {
       //if text entered matches item from list, show item. If not, hide the item.
       if (item.innerHTML.toUpperCase().indexOf(queryUpperCase) > -1) {
         item.style.display = "";
+        visiblePlaces.push(item.innerHTML);
       } else {
         item.style.display = "none";
       }
+
+      /*if (item.style.display !== "none") {
+        this.setState({
+          placesOnList: item.innerHTML
+        });
+      }*/
+    })
+    this.setState({
+      placesOnList: visiblePlaces
     })
   }
 
@@ -49,13 +66,99 @@ class App extends Component {
         marker.style.display = "none";
       }
     })
-
   }
 
   filterAll(){
     this.filterList();
     this.filterMap();
   }
+
+  clickedPlace = (place) => {
+    this.setState({
+      places: place
+    })
+  }
+
+  handleClick = (place) => {
+    this.setState({
+      selectedPlace: place
+    }, this.matchMarker)
+  }
+
+  matchMarker(){
+    //document.querySelectorAll(".")
+  }
+
+  onMarkerClick = (props, marker, e) => {
+    this.setState({
+      selectedPlace: props,
+      activeMarker: marker,
+      showingInfoWindow: true
+    });
+
+    if (this.state.activeMarker) {
+      if (marker.getAnimation() !== null) {
+        marker.setAnimation(null);
+      }
+    }
+  }
+
+  onMapClicked = (props) => {
+    if (this.state.showingInfoWindow) {
+      this.setState({
+        showingInfoWindow: false,
+        activeMarker: null
+      })
+    }
+  };
+  //from https://www.fullstackreact.com/articles/how-to-write-a-google-maps-react-component/#
+  componentDidUpdate(prevProps, prevState) {
+    //prevState.activeMarker.visible = false;
+    if (prevProps.google !== this.props.google) {
+      this.initMap();
+      this.setState({
+        dropAnimation: true
+      })
+    }
+    console.log(prevState);
+    console.log(this.state.placesOnList);
+  }
+
+  initMap() {
+    // google is available
+    if (this.props && this.props.google) {
+      const {google} = this.props;
+      const maps = google.maps;
+
+      const mapRef = this.refs.map;
+      const node = ReactDOM.findDOMNode(mapRef);
+
+      let {initialCenter, zoom} = this.props;
+      const {lat, lng} = initialCenter;
+      const center = new maps.LatLng(lat, lng);
+      const mapConfig = Object.assign({}, {
+        center: center,
+        zoom: zoom
+      })
+      this.map = new maps.Map(node, mapConfig);
+    }
+  }
+
+  //mine
+  onInfoWindowClose = () => {
+    this.setState({
+      showingInfoWindow: false,
+      activeMarker: {},
+      selectedPlace: {}
+    })
+  }
+
+  getMarkerObjects = (element) => {
+    console.log(element);
+    this.setState(prevState => ({
+      markerObjects: [...prevState.markerObjects, element.marker]
+    }))
+  };
 
   render() {
     const places = [
@@ -71,11 +174,13 @@ class App extends Component {
           <h1>Neighborhood Map</h1>
           <Menu noOverlay className="burger-menu" width={300}>
             <MapList className="map-list" places={places} updateQuery={this.updateQuery.bind(this)}
-            query={this.state.query} />
+            query={this.state.query} handleClick={this.handleClick.bind(this)} states={this.state}/>
           </Menu>
         </header>
         <main>
-          <Map ref='map' className="map" places={places}/>
+          <Map ref='map' className="map" places={places} clickedPlace={this.state.places}
+          filter={this.filterMap.bind(this)}
+          onInfoWindowClose={this.onInfoWindowClose.bind(this)} onMarkerClick={this.onMarkerClick.bind(this)} states={this.state}/>
         </main>
       </div>
     );
