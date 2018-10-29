@@ -10,29 +10,45 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      places: [],
-      markerObjects: [],
       query: "",
       showingInfoWindow: false,
       activeMarker: {},
       selectedPlace: {},
-      dropAnimation: true,
       showingMarker: true,
-      placesOnList: []
+      placesOnList: "",
+      allLocations: [
+            {name: "Famous Crispy Curry Puff", lat: 1.279088, lng: 103.846591, placeId: "ChIJ642LmRIZ2jERkz20c4ECaYw", visible: true},
+            {name: "Tian Tian Hainanese Chicken Rice", lat: 1.280520, lng: 103.844807, placeId: "ChIJ2ZDgUg0Z2jERXUJpEsR0Oto", visible: true},
+            {name: "The Golden Duck Co. - Chinatown Point", lat: 1.286149, lng: 103.845921, placeId:"ChIJ3TOiSwsZ2jERNN_xRYcX6H4", visible: true},
+            {name: "Ah Chew Desserts", lat: 1.298052, lng: 103.856355, placeId:"ChIJCRd5-K8Z2jER5mCE-Fge3Ug", visible: true},
+            {name: "Mustafa Shopping Centre", lat: 25.509221, lng: 69.010958, placeId: "ChIJpb4qAa-uTjkRQ1sY2ISOTd0", visible: true}
+      ]
     }
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    console.log(this.state.allLocations);
+    if (prevProps.google !== this.props.google) {
+      this.initMap();
+    }
+  }
+
   updateQuery = (input) => {
     //no guarantee that setState will update the component immediately
     //this.filterMarkers executes once setState is completed
     //setState can only take one callback, so make one function and call
     //multiple functions within if needed
-    this.setState({query: input}, this.filterAll);
+    console.log(input);
+    this.setState({
+      query: input,
+    }, this.filterList);
   }
 
+  /*filterAll(){
+    this.filterList();
+  }*/
+
   filterList() {
-    /*if(query === '' || query === undefined) {
-      return this.setState({ results: [] });
-    }*/
     const queryUpperCase = this.state.query.toUpperCase();
     const items = document.querySelectorAll(".list-item");
     let visiblePlaces = [];
@@ -40,67 +56,82 @@ class App extends Component {
       //if text entered matches item from list, show item. If not, hide the item.
       if (item.innerHTML.toUpperCase().indexOf(queryUpperCase) > -1) {
         item.style.display = "";
-        visiblePlaces.push(item.innerHTML);
+        console.log(item.innerHTML.toUpperCase(),queryUpperCase);
+        visiblePlaces.push(item.innerHTML.trim());
+        //this.findSelectedPlaceMarkers(item.innerHTML);
       } else {
         item.style.display = "none";
       }
-
-      /*if (item.style.display !== "none") {
-        this.setState({
-          placesOnList: item.innerHTML
-        });
-      }*/
-    })
+    });
     this.setState({
       placesOnList: visiblePlaces
     })
   }
 
-  filterMap() {
-    const markers = document.querySelectorAll(".marker");
-    const queryUpperCase = this.state.query.toUpperCase();
-    markers.forEach(marker => {
-      if (marker.innerHTML.toUpperCase().indexOf(queryUpperCase) > -1) {
-        marker.style.display = "";
+  //when a list item is clicked on, save the item name, show marker for item and hide other markers
+  onListClick = (place) => {
+    this.setState({
+      selectedPlace: place.innerHTML.trim()
+    })
+    //console.log("list click update done");
+  }
+
+  /*findSelectedPlaceMarkers = (place) => {
+    if (this.state.placesOnList){
+      this.state.placesOnList.forEach(p => {
+        if (p.trim() === place.trim()){
+          //console.log("match");
+          this.setMarkerVisibility(place);
+        } else {
+          //console.log("what");
+          return false;
+        }
+      });
+    }
+
+    console.log("update marker done")
+  }*/
+
+  //this logic is flawed because unless there is only one item in placesOnList,
+  //only the final run, which compares the last item in placesOnList with each
+  //object in allLocations, is captured and overrides all prior runs.
+  /*setMarkerVisibility(place){
+    this.state.allLocations.map(p => {
+      if (p.name.trim() === place.trim()){
+        p.visible = true;
+        console.log(place, p.name,true);
+        return true
       } else {
-        marker.style.display = "none";
+        console.log(place, p.name, false);
+        p.visible = false;
+        return false
       }
+    });
+    console.log(this.state.allLocations);
+  }*/
+
+  showMarkersOnList(marker){
+    //If marker's name matches items currently visible on list view, show marker.
+    //Need trim() in order to match!
+    return this.state.placesOnList.includes(marker.name.trim());
+  }
+
+  onInfoWindowClose = () => {
+    this.setState({
+      showingInfoWindow: false,
+      activeMarker: {},
+      selectedPlace: {}
     })
   }
 
-  filterAll(){
-    this.filterList();
-    this.filterMap();
-  }
-
-  clickedPlace = (place) => {
-    this.setState({
-      places: place
-    })
-  }
-
-  handleClick = (place) => {
-    this.setState({
-      selectedPlace: place
-    }, this.matchMarker)
-  }
-
-  matchMarker(){
-    //document.querySelectorAll(".")
-  }
-
+  //from https://www.fullstackreact.com/articles/how-to-write-a-google-maps-react-component/#
   onMarkerClick = (props, marker, e) => {
+    console.log(props, marker, e);
     this.setState({
       selectedPlace: props,
       activeMarker: marker,
       showingInfoWindow: true
     });
-
-    if (this.state.activeMarker) {
-      if (marker.getAnimation() !== null) {
-        marker.setAnimation(null);
-      }
-    }
   }
 
   onMapClicked = (props) => {
@@ -110,22 +141,9 @@ class App extends Component {
         activeMarker: null
       })
     }
-  };
-  //from https://www.fullstackreact.com/articles/how-to-write-a-google-maps-react-component/#
-  componentDidUpdate(prevProps, prevState) {
-    //prevState.activeMarker.visible = false;
-    if (prevProps.google !== this.props.google) {
-      this.initMap();
-      this.setState({
-        dropAnimation: true
-      })
-    }
-    console.log(prevState);
-    console.log(this.state.placesOnList);
   }
-
   initMap() {
-    // google is available
+    // if google is available
     if (this.props && this.props.google) {
       const {google} = this.props;
       const maps = google.maps;
@@ -144,43 +162,22 @@ class App extends Component {
     }
   }
 
-  //mine
-  onInfoWindowClose = () => {
-    this.setState({
-      showingInfoWindow: false,
-      activeMarker: {},
-      selectedPlace: {}
-    })
-  }
-
-  getMarkerObjects = (element) => {
-    console.log(element);
-    this.setState(prevState => ({
-      markerObjects: [...prevState.markerObjects, element.marker]
-    }))
-  };
-
   render() {
-    const places = [
-          {name: "Famous Crispy Curry Puff", lat: 1.279088, lng: 103.846591, placeId: "ChIJ642LmRIZ2jERkz20c4ECaYw"},
-          {name: "Tian Tian Hainanese Chicken Rice", lat: 1.280520, lng: 103.844807, placeId: "ChIJ2ZDgUg0Z2jERXUJpEsR0Oto"},
-          {name: "The Golden Duck Co. - Chinatown Point", lat: 1.286149, lng: 103.845921, placeId:"ChIJ3TOiSwsZ2jERNN_xRYcX6H4"},
-          {name: "Ah Chew Desserts", lat: 1.298052, lng: 103.856355, placeId:"ChIJCRd5-K8Z2jER5mCE-Fge3Ug"},
-          {name: "Mustafa Shopping Centre", lat: 25.509221, lng: 69.010958, placeId: "ChIJpb4qAa-uTjkRQ1sY2ISOTd0"}
-        ]
     return (
       <div className="App">
         <header className="App-header">
           <h1>Neighborhood Map</h1>
           <Menu noOverlay className="burger-menu" width={300}>
-            <MapList className="map-list" places={places} updateQuery={this.updateQuery.bind(this)}
-            query={this.state.query} handleClick={this.handleClick.bind(this)} states={this.state}/>
+            <MapList className="map-list" places={this.state.allLocations} updateQuery={this.updateQuery.bind(this)}
+            query={this.state.query} onListClick={this.onListClick.bind(this)}/>
           </Menu>
         </header>
         <main>
-          <Map ref='map' className="map" places={places} clickedPlace={this.state.places}
-          filter={this.filterMap.bind(this)}
-          onInfoWindowClose={this.onInfoWindowClose.bind(this)} onMarkerClick={this.onMarkerClick.bind(this)} states={this.state}/>
+          <Map ref='map' className="map" places={this.state.allLocations}
+          showMarkersOnList={this.showMarkersOnList.bind(this)}
+          onInfoWindowClose={this.onInfoWindowClose.bind(this)} onMarkerClick={this.onMarkerClick.bind(this)} states={this.state}
+          onMapClicked={this.onMapClicked.bind(this)}
+          />
         </main>
       </div>
     );
