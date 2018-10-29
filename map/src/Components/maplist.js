@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 class MapList extends Component {
-  //this.props.updateQuery points to the updateQuery function in the parent component, which alters parent's state
   render() {
     const locations = this.props.places;
     return (
@@ -11,7 +10,8 @@ class MapList extends Component {
         onKeyPress={(event) => this.props.updateQuery(event.target.value)}/>
         <div className="place-list">
         { locations.map((place, index) =>
-          <div className="list-item" key={index}>{place.name}</div>
+          <div className="list-item" name={place.name} key={index}
+          onClick={(event) => this.props.onListClick(event.target)}>{place.name} </div>
         )}
         </div>
       </div>
