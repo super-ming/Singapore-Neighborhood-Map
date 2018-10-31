@@ -2,34 +2,51 @@ import React, { Component } from 'react';
 import './App.css';
 import './Styles/burgermenu.css';
 import { slide as Menu } from 'react-burger-menu';
-import Map from './Components/map'
+import MapContainer from './Components/map'
 import MapList from './Components/maplist'
 import ReactDOM from 'react-dom'
+
+
+const mapRef = React.createRef();
+const mapListRef = React.createRef();
+const mapListWrapper = React.forwardRef((props, ref) => {
+
+})
 
 class App extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       query: "",
       showingInfoWindow: false,
       activeMarker: {},
       selectedPlace: {},
+      selectedIndex: [],
       showingMarker: true,
       placesOnList: "",
+      show: null,
+      markers: null,
+      map: null,
       allLocations: [
-            {name: "Famous Crispy Curry Puff", lat: 1.279088, lng: 103.846591, placeId: "ChIJ642LmRIZ2jERkz20c4ECaYw", visible: true},
-            {name: "Tian Tian Hainanese Chicken Rice", lat: 1.280520, lng: 103.844807, placeId: "ChIJ2ZDgUg0Z2jERXUJpEsR0Oto", visible: true},
-            {name: "The Golden Duck Co. - Chinatown Point", lat: 1.286149, lng: 103.845921, placeId:"ChIJ3TOiSwsZ2jERNN_xRYcX6H4", visible: true},
-            {name: "Ah Chew Desserts", lat: 1.298052, lng: 103.856355, placeId:"ChIJCRd5-K8Z2jER5mCE-Fge3Ug", visible: true},
-            {name: "Mustafa Shopping Centre", lat: 25.509221, lng: 69.010958, placeId: "ChIJpb4qAa-uTjkRQ1sY2ISOTd0", visible: true}
+            {name: "Famous Crispy Curry Puff", lat: 1.279088, lng: 103.846591, placeId: "ChIJ642LmRIZ2jERkz20c4ECaYw", visible: true, open: false},
+            {name: "Tian Tian Hainanese Chicken Rice", lat: 1.280520, lng: 103.844807, placeId: "ChIJ2ZDgUg0Z2jERXUJpEsR0Oto", visible: true, open: false},
+            {name: "The Golden Duck Co. - Chinatown Point", lat: 1.286149, lng: 103.845921, placeId:"ChIJ3TOiSwsZ2jERNN_xRYcX6H4", visible: true, open: false},
+            {name: "Ah Chew Desserts", lat: 1.298052, lng: 103.856355, placeId:"ChIJCRd5-K8Z2jER5mCE-Fge3Ug", visible: true, open: false},
+            {name: "Mustafa Shopping Centre", lat: 25.509221, lng: 69.010958, placeId: "ChIJpb4qAa-uTjkRQ1sY2ISOTd0", visible: true, open: false}
       ]
     }
   }
-
+  componentDidMount() {
+    console.log(this.refs);
+  }
   componentDidUpdate(prevProps, prevState) {
-    console.log(this.state.allLocations);
+    console.log(prevState);
+    console.log(prevProps);
+    console.log(this);
+    //console.log(this.state.activeMarker);
     if (prevProps.google !== this.props.google) {
-      this.initMap();
+      //this.initMap();
     }
   }
 
@@ -44,16 +61,13 @@ class App extends Component {
     }, this.filterList);
   }
 
-  /*filterAll(){
-    this.filterList();
-  }*/
-
   filterList() {
     const queryUpperCase = this.state.query.toUpperCase();
     const items = document.querySelectorAll(".list-item");
     let visiblePlaces = [];
     items.forEach(item => {
       //if text entered matches item from list, show item. If not, hide the item.
+      //items.filter(item=>{new RegExp(this.state.query,'i').exec(item.innerHTML)})
       if (item.innerHTML.toUpperCase().indexOf(queryUpperCase) > -1) {
         item.style.display = "";
         console.log(item.innerHTML.toUpperCase(),queryUpperCase);
@@ -69,12 +83,19 @@ class App extends Component {
   }
 
   //when a list item is clicked on, save the item name, show marker for item and hide other markers
-  onListClick = (place) => {
+  onListClick = (place, index) => {
     this.setState({
-      selectedPlace: place.innerHTML.trim()
-    })
-    //console.log("list click update done");
+      selectedPlace: place,
+      selectedIndex: index,
+      allLocations: this.updateLocations(place),
+      show: true
+    });
+    console.log(this);
+    //let m = this.state.markers[index];
+    //m.click();
   }
+
+
 
   /*findSelectedPlaceMarkers = (place) => {
     if (this.state.placesOnList){
@@ -110,7 +131,7 @@ class App extends Component {
     console.log(this.state.allLocations);
   }*/
 
-  showMarkersOnList(marker){
+  showMarkersOnList = (marker) => {
     //If marker's name matches items currently visible on list view, show marker.
     //Need trim() in order to match!
     return this.state.placesOnList.includes(marker.name.trim());
@@ -127,10 +148,13 @@ class App extends Component {
   //from https://www.fullstackreact.com/articles/how-to-write-a-google-maps-react-component/#
   onMarkerClick = (props, marker, e) => {
     console.log(props, marker, e);
+    let locationsWithClick = this.updateLocations(marker);
     this.setState({
       selectedPlace: props,
       activeMarker: marker,
-      showingInfoWindow: true
+      showingInfoWindow: true,
+      allLocations: locationsWithClick,
+      show: true
     });
   }
 
@@ -142,6 +166,21 @@ class App extends Component {
       })
     }
   }
+
+  updateLocations = (place) => {
+    let updatedLocations = this.state.allLocations;
+    console.log(place);
+    this.state.allLocations.find((obj, idx)=>{
+      if(obj.name === place.name){
+        updatedLocations[idx].open = true;
+        return true;
+      } else {
+        return false;
+      }
+    })
+    return updatedLocations;
+  }
+
   initMap() {
     // if google is available
     if (this.props && this.props.google) {
@@ -162,21 +201,30 @@ class App extends Component {
     }
   }
 
+  getMarkers = (map) => {
+    //console.log(map[0].props.onClick);
+    //map[0].props.onClick();
+    this.setState({
+      map: map
+    })
+  }
+
   render() {
+    //console.log(this.state);
     return (
       <div className="App">
         <header className="App-header">
           <h1>Neighborhood Map</h1>
           <Menu noOverlay className="burger-menu" width={300}>
-            <MapList className="map-list" places={this.state.allLocations} updateQuery={this.updateQuery.bind(this)}
-            query={this.state.query} onListClick={this.onListClick.bind(this)}/>
+            <MapList ref={mapListRef} className="map-list" places={this.state.allLocations} updateQuery={this.updateQuery.bind(this)}
+            query={this.state.query} onListClick={this.onListClick} />
           </Menu>
         </header>
         <main>
-          <Map ref='map' className="map" places={this.state.allLocations}
-          showMarkersOnList={this.showMarkersOnList.bind(this)}
-          onInfoWindowClose={this.onInfoWindowClose.bind(this)} onMarkerClick={this.onMarkerClick.bind(this)} states={this.state}
-          onMapClicked={this.onMapClicked.bind(this)}
+          <MapContainer ref={"map"} className="map-wrapper" places={this.state.allLocations}
+          showMarkersOnList={this.showMarkersOnList}
+          onInfoWindowClose={this.onInfoWindowClose} onMarkerClick={this.onMarkerClick} states={this.state}
+          onMapClicked={this.onMapClicked} getMarkers={this.getMarkers}
           />
         </main>
       </div>
