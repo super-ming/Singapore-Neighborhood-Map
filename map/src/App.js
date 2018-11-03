@@ -24,6 +24,9 @@ class App extends Component {
   }
 
   updateQuery = (input) => {
+    if(this.state.infoWindow){
+      this.state.infoWindow.close();
+    }
     this.setState({
       query: input,
       menuOpen: true
