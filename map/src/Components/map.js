@@ -98,6 +98,10 @@ class MapContainer extends Component {
             this.props.onMarkerClick(venue, marker);
           }, false);
         });
+        marker.addListener('mouseout', ()=>{
+          marker.setAnimation(null)
+          this.props.onInfoWindowClose()
+        })
         infoWindow.addListener('closeclick', ()=>{
           marker.setAnimation(null)
           this.props.onInfoWindowClose()
