@@ -126,6 +126,12 @@ class App extends Component {
       activeMarker: {},
       clickedPlace: {},
       showingInfoWindow: false
+    }, this.showAllMarkers)
+  }
+
+  showAllMarkers = ()=> {
+    this.state.allMarkers.forEach(marker => {
+      marker.setVisible = true
     })
   }
 
