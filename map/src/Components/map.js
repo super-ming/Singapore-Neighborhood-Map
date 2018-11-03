@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {Map, GoogleApiWrapper} from 'google-maps-react';
+import ErrorBoundary from './errorboundary'
 
 window.gm_authFailure = ()=>{
   alert("Invalid Google API key. Please check your Google API key")
@@ -29,8 +30,13 @@ class MapContainer extends Component {
       headers
     });
 
-    fetch(request).then(res => res.json()).then(results => {
-      results.data.forEach((result, index)=> {
+    fetch(request).then(res => {
+      if (!res.ok) {
+        alert(res.statusText);
+      } else {
+        return res.json()
+      }}).then(res => {
+      res.data.forEach((result, index)=> {
         let venue = {};
         venue.name = result.name
         venue.lat = result.location.latitude
@@ -60,7 +66,7 @@ class MapContainer extends Component {
         searchResults.push(venue);
       });
     }).catch(err=> {
-      alert("Facebook Places API is currently unavailable. Error: ", err);
+      alert("Something went wrong with Facebook Places API. Error: "+ err);
     });
     this.props.getFbResults(searchResults);
   }
@@ -112,10 +118,18 @@ class MapContainer extends Component {
   render() {
     if(window.google){
       return (
-        <Map google={this.props.google} onClick={this.onMapClicked} className="map"
-        initialCenter={{lat:1.290604, lng:103.846473}} zoom={15} role="application" aria-label="map"
-        onReady={this.mapReady}>
-        </Map>
+        <ErrorBoundary>
+          <Map
+            aria-label="map"
+            className="map"
+            role="application"
+            google={this.props.google}
+            initialCenter={{lat:1.290604, lng:103.846473}}
+            onClick={this.onMapClicked}
+            onReady={this.mapReady}
+            zoom={15}>
+          </Map>
+        </ErrorBoundary>
       );
     } else {
       return(
