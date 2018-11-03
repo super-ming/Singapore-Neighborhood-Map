@@ -1,13 +1,23 @@
-.bm-burger-bars {
-  background: #7e85a2;
+.App {
+  text-align: center;
 }
 
-.bm-burger-button {
-  position: fixed;
-  width: 36px;
-  height: 30px;
-  left: 36px;
-  top: 36px;
+.App-header {
+  background-color: #054bd7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+.bm-burger-bars {
+  background: #7e85a2;
 }
 
 /* Position and sizing of burger button */
@@ -16,12 +26,12 @@
   width: 36px;
   height: 30px;
   left: 36px;
-  top: 25px;
+  top: 15px;
 }
 
 /* Color/shape of burger icon bars */
 .bm-burger-bars {
-  background: #6b718c;
+  background: #ffffff;
 }
 
 /* Position and sizing of clickable cross button */
@@ -32,7 +42,7 @@
 
 /* Color/shape of close button cross */
 .bm-cross {
-  background: #bdc3c7;
+  background: #000000;
 }
 
 /* General sidebar styles */
@@ -40,7 +50,7 @@
   background: #373a47;
   padding: 2.5em 0 0;
   font-size: 1.15em;
-  width: 100%;
+  width: 90%;
 }
 
 /* Morph shape necessary with bubble or elastic */
@@ -50,7 +60,7 @@
 
 /* Wrapper for item list */
 .bm-item-list {
-  color: #b8b7ad;
+  color: #ffffff;
   padding: 0;
   width: 100%;
 }
@@ -64,16 +74,11 @@
 .bm-overlay {
   background: rgba(0, 0, 0, 0.3);
   left: 0px;
-  width: 280px;
+  width: 250px;
 }
 
 .burger-menu {
   left: 0;
-}
-
-.App-header {
-  height: 80px;
-  min-height: 50px;
 }
 
 .App-header h1 {
@@ -89,7 +94,50 @@
   border-color: #dfe748;
 }
 
+.list-item:hover {
+  background-color:
+}
+
 
 div.list-item:last-child {
   border-bottom: 1px solid #dfe748;
+}
+
+#searchBox {
+  width: 90%;
+  height: 30px;
+  margin-bottom: 10px;
+}
+
+.gm-style-iw h4 {
+  color: #0339a3;
+}
+
+.gm-style-iw p {
+  color: #000000;
+}
+
+.map {
+  max-height: 88%;
+}
+
+@media only screen and (max-width: 500px) {
+  .bm-burger-button {
+    left: 15px;
+    width: 30px;
+  }
+  .App-header h1 {
+    font-size: 20px;
+  }
+}
+
+@media only screen and (min-width: 501px) {
+  .bm-burger-button {
+    left: 20px;
+    width: 30px;
+    top: 30px;
+  }
+  .App-header h1 {
+    font-size: 30px;
+  }
 }
