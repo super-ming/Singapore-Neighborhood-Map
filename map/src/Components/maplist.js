@@ -7,12 +7,12 @@ class MapList extends Component {
       <div>
         <input id="searchBox" type="text" placeholder="Type here to filter locations" value={this.props.query}
         onChange={event => this.props.updateQuery(event.target.value)}
-        onKeyPress={event => this.props.updateQuery(event.target.value)}/>
+        onKeyUp={event => this.props.updateQuery(event.target.value)}/>
         <div className="place-list">
-        { locations.map((place, index) =>
+        { locations && (locations.map((place, index) =>
           <div className="list-item" name={place.name} key={index}
           onClick={event => this.props.onListClick(place, index)}>{place.name} </div>
-        )}
+        ))}
         </div>
       </div>
     );
