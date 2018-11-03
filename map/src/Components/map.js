@@ -1,103 +1,145 @@
 import React, { Component } from 'react';
-import {Map, InfoWindow, Marker, GoogleApiWrapper} from 'google-maps-react';
-import ReactDOM from 'react-dom'
-let mark = [];
-let m;
+import {Map, GoogleApiWrapper} from 'google-maps-react';
+import ErrorBoundary from './errorboundary'
+
+window.gm_authFailure = ()=>{
+  alert("Invalid Google API key. Please check your Google API key")
+}
+
+const fbAppID = '2203110406389507'
+const fbAppSecret ='378ed176af2b45d3d7c38f62a82256a0'
+
 class MapContainer extends Component {
-  //from https://github.com/fullstackreact/google-maps-react
   componentDidMount() {
-    //this.props.getMarkers(mark);
-    console.log(mark);
+    this.getVenueInfo();
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    //prevState.activeMarker.visible = false;
-    //console.log(prevProps);
-    //if (prevProps.states.placesOnList !== this.props.states.placesOnList) {
-    //  this.updateState();
-    //}
-    //console.log(markers);
-    //console.log(this);
-    if (prevProps.google !== this.props.google) {
-      this.initMap();
-    }
-    if (prevProps.states.selectedPlace !== this.props.states.selectedPlace){
-      //this.triggerClick();
-    }
+  mapReady = (props,map) =>{
+    //setTimeout is added to ensure that data from API is available in order to create the markers.
+    setTimeout(()=> {
+      this.addMarkers(map);
+    }, 1300)
   }
-
-  showMarkers(){
-    console.log("marker");
-    const click = this.props.states.allLocations.find(obj => {
-      return obj.open === true
+  //fetch nearby restaurant information from Facebook Graph API
+  getVenueInfo = () => {
+    let searchResults = [];
+    const placeSearchUrl = `https://graph.facebook.com/v3.2/search?type=place&center=1.290604,103.846473&categories=["FOOD_BEVERAGE"]&distance=1000&fields=name, location, overall_star_rating, phone, website, picture, link, checkins, price_range&access_token=${fbAppID}|${fbAppSecret}`
+    let headers = new Headers();
+    let request = new Request(placeSearchUrl, {
+      method: 'GET',
+      headers
     });
-    console.log(click);
-    if(click){
-      return true;
-    }
-  }
 
-  initMap() {
-    // if google is available
-    if (this.props && this.props.google) {
-      const {google} = this.props;
-      const maps = google.maps;
-
-      const mapRef = this.refs.map;
-      const node = ReactDOM.findDOMNode(mapRef);
-
-      let {initialCenter, zoom} = this.props;
-      const {lat, lng} = initialCenter;
-      const center = new maps.LatLng(lat, lng);
-      const mapConfig = Object.assign({}, {
-        center: center,
-        zoom: zoom
-      })
-      this.map = new maps.Map(node, mapConfig);
-    }
-  }
-
-  triggerClick = () => {
-    let mev = {
-      stop: null,
-      latLng: new this.props.google.maps.LatLng(this.props.states.selectedPlace.lat,this.props.states.selectedPlace.lng)
-    }
-    //this.props.google.maps.event.trigger(mark[0], 'click', mev);
-    console.log(new this.props.google.maps.LatLng(1.02,1.03));
-    mark[0].props.onClick(mark[0].props, mark[0]);
-  }
-  render() {
-    //(Object.keys(this.state.activeMarker).length !== 0) ? ((this.state.activeMarker.name === marker.name) ? 1 : 0) : 2
-    const locations = this.props.states.allLocations;
-    console.log(this);
-    //console.log(locations
-
-    return (
-
-      <Map google={this.props.google} onClick={this.props.onMapClicked} className="map"ref={"maps"}
-      initialCenter={{lat:1.290604, lng:103.846473}} zoom={14} role="application" aria-label="map">
-        {
-          locations.map((loc, index) => {
-            m = <Marker key={index} onClick={this.props.onMarkerClick}
-                      name={loc.name} position={{lat: loc.lat, lng: loc.lng}} className="marker"
-                      animation={this.props.states.activeMarker ? ((this.props.states.activeMarker.name === loc.name) ? 1 : 0) : 0}
-                      visible={this.props.states.placesOnList ? (this.props.showMarkersOnList(loc) ? true : false) : true}
-                      />;
-                  mark.push(m);
-                  return m
-              })
+    fetch(request).then(res => {
+      if (!res.ok) {
+        alert(res.statusText);
+      } else {
+        return res.json()
+      }}).then(res => {
+      res.data.forEach((result, index)=> {
+        let venue = {};
+        venue.name = result.name
+        venue.lat = result.location.latitude
+        venue.lng = result.location.longitude
+        venue.id = result.id
+        if(result.overall_star_rating) {
+          venue.rating = result.overall_star_rating
+        } else {
+          venue.rating = "No rating provided"
         }
+        if(result.price_range) {
+          venue.price_range = result.price_range
+        } else {
+          venue.price_range = "No price range provided"
+        }
+        if(result.checkins) {
+          venue.checkins = result.checkins
+        } else {
+          venue.checkins = "None"
+        }
+        if(result.website) {
+          venue.website = result.website
+        } else {
+          venue.website = result.link
+        }
+        venue.index = index
+        searchResults.push(venue);
+      });
+    }).catch(err=> {
+      alert("Something went wrong with Facebook Places API. Error: "+ err);
+    });
+    this.props.getFbResults(searchResults);
+  }
 
-        <InfoWindow marker={this.props.states.activeMarker}
-          name={this.props.states.activeMarker ? this.props.states.activeMarker.name : ""}
-          visible={this.props.states.showingInfoWindow }
-          onClose={this.props.states.onInfoWindowClose} >
-            <div>
-              <p>{this.props.states.selectedPlace.name}</p>
-            </div>
-        </InfoWindow>
-      </Map>
-    );
+  addMarkers(map) {
+    let markers = [];
+    const infoWindow = new this.props.google.maps.InfoWindow();
+
+    if(this.props.fbResults){
+      for (let venue of this.props.fbResults){
+        const marker = new this.props.google.maps.Marker({
+          position: {lat: venue.lat, lng: venue.lng},
+          map: map,
+          title: venue.name,
+          id: venue.index,
+          animation: 2  //Drop
+        })
+        markers.push(marker);
+        const infoContent = `<h4>${venue.name}</h4><p>Rating: ${venue.rating}</p><p>Price Range: ${venue.price_range}</p><p>Facebook Check-ins: ${venue.checkins}</p><a href=${venue.website}>Website</a>`;
+        ['click', 'mouseover'].forEach(e => {
+          marker.addListener(e, ()=> {
+          if (marker.getAnimation() !== null) {
+            marker.setAnimation(null);
+          } else {
+            marker.setAnimation(1); //Bounce
+          }
+            infoWindow.setContent(infoContent);
+            infoWindow.open(map, marker);
+            this.props.onMarkerClick(venue, marker);
+          }, false);
+        });
+        marker.addListener('mouseout', ()=>{
+          marker.setAnimation(null)
+          this.props.onInfoWindowClose()
+        })
+        infoWindow.addListener('closeclick', ()=>{
+          marker.setAnimation(null)
+          this.props.onInfoWindowClose()
+        })
+      }
+    }
+    this.props.getMap(markers, infoWindow, map, this.props.google)
+  }
+
+  onMapClicked = ()=>{
+    this.props.infoWindow.close();
+    this.props.allMarkers.forEach(marker=>{
+      marker.setAnimation(null);
+    }, this.props.onInfoWindowClose)
+    this.props.updateQuery(this.props.query)
+  }
+
+  render() {
+    if(window.google){
+      return (
+        <ErrorBoundary>
+          <Map
+            aria-label="map"
+            className="map"
+            role="application"
+            google={this.props.google}
+            initialCenter={{lat:1.290604, lng:103.846473}}
+            onClick={this.onMapClicked}
+            onReady={this.mapReady}
+            zoom={15}>
+          </Map>
+        </ErrorBoundary>
+      );
+    } else {
+      return(
+        <div>Error loading Google Maps</div>
+      )
+    }
   }
 }
 
