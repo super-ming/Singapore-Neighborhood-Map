@@ -16,14 +16,17 @@ class App extends Component {
       clickedPlace: [],
       infoWindow: null,
       map: null,
+      menuOpen: false,
       placesOnList: "",
       query: "",
+      showingInfoWindow: false
     }
   }
 
   updateQuery = (input) => {
     this.setState({
       query: input,
+      menuOpen: true
     }, this.filterList);
   }
 
@@ -73,6 +76,7 @@ class App extends Component {
           this.setState({
             activeMarker: marker
           })
+          marker.setVisible(true);
           return this.triggerMarkerClick();
         } else {
           return marker.setVisible(false);
@@ -95,14 +99,22 @@ class App extends Component {
     })
     this.setState({
       activeMarker: marker,
-      clickedPlace: props
+      clickedPlace: props,
+      menuOpen: false,
+      showingInfoWindow: true
     });
   }
 
   onMapClicked = (props) => {
     if (this.state.showingInfoWindow) {
       this.setState({
-        activeMarker: null
+        activeMarker: null,
+        menuOpen: false,
+        showingInfoWindow: false
+      })
+    } else {
+      this.setState({
+        menuOpen: false
       })
     }
   }
@@ -110,7 +122,8 @@ class App extends Component {
   onInfoWindowClose = () => {
     this.setState({
       activeMarker: {},
-      clickedPlace: {}
+      clickedPlace: {},
+      showingInfoWindow: false
     })
   }
 
@@ -135,7 +148,7 @@ class App extends Component {
         <nav className="App-header">
           <h1>Neighborhood Map</h1>
           <div tabIndex="0">
-          <Menu noOverlay
+          <Menu noOverlay isOpen={this.state.menuOpen}
             className="burger-menu"
             width={300} >
             <VenueList
