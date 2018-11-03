@@ -13,33 +13,18 @@ class App extends Component {
     super(props);
 
     this.state = {
-      query: "",
-      showingInfoWindow: false,
       activeMarker: {},
+      allLocations: null,
+      allMarkers: [],
       clickedPlace: [],
-      selectedIndex: [],
-      placesOnList: "",
-      allMarkers:[],
       infoWindow: null,
       map: null,
-      allLocations: null
-    }
-  }
-  componentDidMount() {
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.google !== this.props.google) {
-
+      placesOnList: "",
+      query: "",
     }
   }
 
   updateQuery = (input) => {
-    //no guarantee that setState will update the component immediately
-    //this.filterMarkers executes once setState is completed
-    //setState can only take one callback, so make one function and call
-    //multiple functions within if needed
-    //console.log(input);
     this.setState({
       query: input,
     }, this.filterList);
@@ -54,7 +39,8 @@ class App extends Component {
       //Other possible code: items.filter(item=>{new RegExp(this.state.query,'i').exec(item.innerHTML)})
       if (item.innerHTML.toUpperCase().indexOf(queryUpperCase) > -1) {
         item.style.display = "";
-        visiblePlaces.push(item.innerHTML.trim());
+        const changeAmp = item.innerHTML.replace(/&amp;/, "&");
+        visiblePlaces.push(changeAmp.trim());
       } else {
         item.style.display = "none";
       }
@@ -75,7 +61,7 @@ class App extends Component {
           this.setState({
             activeMarker: marker
           })
-          return marker.setVisible(true);
+          return this.triggerMarkerClick();
         } else {
           return marker.setVisible(false);
         }
@@ -87,11 +73,9 @@ class App extends Component {
   //when a list item is clicked on, save the item name, show marker for item and hide other markers
   onListClick = (place, index) => {
     place = [place];
-    console.log(index, "click");
     this.setState({
       clickedPlace: place,
       selectedIndex: index,
-      allLocations: this.updateLocations(place[0], index)
     })
     //Tried calling setMarkerVisibility as a callback in the this.setState function above, but
     //the new this.state.clickedPlace is still not set by the time setMarkerVisibility runs for some odd
@@ -99,14 +83,7 @@ class App extends Component {
     //Using setTimeout to ensure clickedPlace has been updated.
     setTimeout(()=> {
       this.setMarkerVisibility([place[0]])
-      this.triggerMarkerClick();
     }, 100)
-  }
-
-  updateLocations = (place, idx) => {
-    let updatedLocations = this.state.allLocations;
-    updatedLocations[idx].isOpen = true;
-    return updatedLocations;
   }
 
   triggerMarkerClick = ()=> {
@@ -120,17 +97,14 @@ class App extends Component {
       }
     })
     this.setState({
-      clickedPlace: props,
       activeMarker: marker,
-      selectedIndex: marker.id,
-      showingInfoWindow: true
+      clickedPlace: props
     });
   }
 
   onMapClicked = (props) => {
     if (this.state.showingInfoWindow) {
       this.setState({
-        showingInfoWindow: false,
         activeMarker: null
       })
     }
@@ -138,10 +112,8 @@ class App extends Component {
 
   onInfoWindowClose = () => {
     this.setState({
-      showingInfoWindow: false,
       activeMarker: {},
-      clickedPlace: {},
-      selectedIndex: [],
+      clickedPlace: {}
     })
   }
 
@@ -166,17 +138,33 @@ class App extends Component {
         <nav className="App-header">
           <h1>Neighborhood Map</h1>
           <div tabIndex="0">
-          <Menu noOverlay className="burger-menu" width={300} >
-            <MapList ref={mapListRef} className="map-list" places={this.state.allLocations} updateQuery={this.updateQuery.bind(this)}
-            query={this.state.query} onListClick={this.onListClick} />
+          <Menu noOverlay
+            className="burger-menu"
+            width={300} >
+            <MapList
+              ref={mapListRef}
+              className="map-list"
+              onListClick={this.onListClick}
+              places={this.state.allLocations}
+              query={this.state.query}
+              updateQuery={this.updateQuery.bind(this)}
+            />
           </Menu>
           </div>
         </nav>
         <main>
-          <MapContainer ref={"map"} className="map-wrapper" places={this.state.allLocations}
-          triggerMarkerClick={this.triggerMarkerClick} getFbResults={this.getFbResults}
-          onInfoWindowClose={this.onInfoWindowClose} onMarkerClick={this.onMarkerClick} states={this.state}
-          onMapClicked={this.onMapClicked} getMarkers={this.getMarkers} updateQuery={this.updateQuery}
+          <MapContainer
+            ref={"map"}
+            className="map-wrapper"
+            states={this.state}
+            getFbResults={this.getFbResults}
+            getMarkers={this.getMarkers}
+            onInfoWindowClose={this.onInfoWindowClose}
+            onMapClicked={this.onMapClicked}
+            onMarkerClick={this.onMarkerClick}
+            setMarkerVisibility={this.setMarkerVisibility}
+            triggerMarkerClick={this.triggerMarkerClick}
+            updateQuery={this.updateQuery}
           />
         </main>
       </div>
