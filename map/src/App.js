@@ -3,10 +3,7 @@ import './App.css';
 import './Styles/burgermenu.css';
 import { slide as Menu } from 'react-burger-menu';
 import MapContainer from './Components/map'
-import MapList from './Components/maplist'
-
-
-const mapListRef = React.createRef();
+import VenueList from './Components/venuelist'
 
 class App extends Component {
   constructor(props) {
@@ -50,14 +47,14 @@ class App extends Component {
     }, this.setMarkerVisibility(visiblePlaces))
   }
 
-  setMarkerVisibility = (place) => {
+  setMarkerVisibility = (venue) => {
     this.state.allMarkers.find((marker) => {
       //If list item hasn't been clicked, show markers currently visible on list
-      if (place.includes(marker.title.trim())){
+      if (venue.includes(marker.title.trim())){
         return marker.setVisible(true);
       } else if (this.state.clickedPlace){
         //If list item is clicked, show corresponding marker
-        if ([place[0].name].includes(marker.title.trim())){
+        if ([venue[0].name].includes(marker.title.trim())){
           this.setState({
             activeMarker: marker
           })
@@ -71,18 +68,17 @@ class App extends Component {
     });
   }
   //when a list item is clicked on, save the item name, show marker for item and hide other markers
-  onListClick = (place, index) => {
-    place = [place];
+  onListClick = (venue) => {
+    venue = [venue];
     this.setState({
-      clickedPlace: place,
-      selectedIndex: index,
+      clickedPlace: venue
     })
     //Tried calling setMarkerVisibility as a callback in the this.setState function above, but
     //the new this.state.clickedPlace is still not set by the time setMarkerVisibility runs for some odd
     //reason. When setMarkerVisibility runs, it is still looking at the old this.state.clickedPlace.
     //Using setTimeout to ensure clickedPlace has been updated.
     setTimeout(()=> {
-      this.setMarkerVisibility([place[0]])
+      this.setMarkerVisibility([venue[0]])
     }, 100)
   }
 
@@ -90,8 +86,8 @@ class App extends Component {
     this.state.google.maps.event.trigger(this.state.activeMarker, 'click');
   }
 
-  onMarkerClick = (props, marker, index) => {
-    this.state.allMarkers.forEach((mkr, index)=>{
+  onMarkerClick = (props, marker) => {
+    this.state.allMarkers.forEach((mkr)=>{
       if(marker.title !== mkr.title){
         mkr.setAnimation(null);
       }
@@ -141,11 +137,10 @@ class App extends Component {
           <Menu noOverlay
             className="burger-menu"
             width={300} >
-            <MapList
-              ref={mapListRef}
+            <VenueList
               className="map-list"
               onListClick={this.onListClick}
-              places={this.state.allLocations}
+              venuesvenue={this.state.allLocations}
               query={this.state.query}
               updateQuery={this.updateQuery.bind(this)}
             />
