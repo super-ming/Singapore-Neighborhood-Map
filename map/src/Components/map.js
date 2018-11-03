@@ -12,39 +12,58 @@ class MapContainer extends Component {
   //from https://github.com/fullstackreact/google-maps-react
   componentDidMount() {
     this.getVenueInfo();
-    console.log("map mounted")
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-console.log(this.props.states.allLocations);
-    if (prevProps.google !== this.props.google) {
-      //this.initMap();
-
-    }
-    if (prevProps.states.selectedPlace !== this.props.states.selectedPlace){
-      //this.triggerClick();
-    }
   }
 
   mapReady = (props,map) =>{
-    //this.getVenueInfo();
-    this.addMarkers(map);
-    console.log("map ready")
+    //setTimeout is added to ensure that data from API is available in order to create the markers.
+    setTimeout(()=> {
+      this.addMarkers(map);
+    }, 1300)
+  }
+
+  getVenueInfo = () => {
+    let searchResults = [];
+    const placeSearchUrl = `https://graph.facebook.com/v3.2/search?type=place&center=1.290604,103.846473&categories=["FOOD_BEVERAGE"]&distance=1000&fields=name, location, overall_star_rating, phone, website, picture, link&access_token=${fbAppID}|${fbAppSecret}`
+    let headers = new Headers();
+    let request = new Request(placeSearchUrl, {
+      method: 'GET',
+      headers
+    });
+
+    fetch(request).then(res => res.json()).then(results => {
+      results.data.forEach((result, index)=> {
+        let venue = {};
+        venue.name = result.name
+        venue.lat = result.location.latitude
+        venue.lng = result.location.longitude
+        venue.id = result.id
+        venue.rating = result.overall_star_rating
+        if(result.website){
+          venue.website = result.website
+        } else {
+          venue.website = result.link
+        }
+        venue.visible = true
+        venue.isOpen = false
+        venue.index = index
+        searchResults.push(venue);
+      });
+    }).catch(err=> {
+      alert("Facebook Places API is currently unavailable", err);
+    });
+    this.props.getFbResults(searchResults);
   }
 
   addMarkers(map) {
     let markers = [];
     const infoWindow = new this.props.google.maps.InfoWindow();
-    console.log(this.props.places);
     if(this.props.states.allLocations){
-      console.log("allLocations exist");
       for (let place of this.props.states.allLocations){
-
         const marker = new this.props.google.maps.Marker({
           position: {lat: place.lat, lng: place.lng},
           map: map,
           title: place.name,
-          //id: index,
+          id: place.index,
           animation: 2  //Drop
         })
         markers.push(marker);
@@ -64,42 +83,8 @@ console.log(this.props.states.allLocations);
           this.props.onInfoWindowClose()
         })
       };
-    } else {
-      console.log("what")
     }
     this.props.getMarkers(markers, infoWindow, map, this.props.google)
-  }
-
-  getVenueInfo = () => {
-    let searchResults = [];
-    const placeSearchUrl = `https://graph.facebook.com/v3.2/search?type=place&center=1.290604,103.846473&categories=["FOOD_BEVERAGE"]&distance=1000&fields=name, location, overall_star_rating, phone, website, picture, link&access_token=${fbAppID}|${fbAppSecret}`
-    let headers = new Headers();
-    let request = new Request(placeSearchUrl, {
-      method: 'GET',
-      headers
-    });
-
-    fetch(request).then(res => res.json()).then(results => {
-      results.data.forEach((result)=> {
-        let venue = {};
-        venue.name = result.name
-        venue.lat = result.location.latitude
-        venue.lng = result.location.longitude
-        venue.id = result.id
-        venue.rating = result.overall_star_rating
-        if(result.website){
-          venue.website = result.website
-        } else {
-          venue.website = result.link
-        }
-        venue.visible = true
-        venue.isOpen = false
-        searchResults.push(venue);
-      });
-    }).catch(err=> {
-      alert("Facebook Places API is currently unavailable", err);
-    });
-    this.props.getFbResults(searchResults);
   }
 
   onMapClicked = ()=>{
@@ -110,12 +95,11 @@ console.log(this.props.states.allLocations);
     this.props.updateQuery(this.props.states.query)
   }
 
-
   render() {
     if(window.google){
       return (
-        <Map google={this.props.google} onClick={this.onMapClicked} className="map"ref={"maps"}
-        initialCenter={{lat:1.290604, lng:103.846473}} zoom={14} role="application" aria-label="map"
+        <Map google={this.props.google} onClick={this.onMapClicked} className="map"
+        initialCenter={{lat:1.290604, lng:103.846473}} zoom={15} role="application" aria-label="map"
         onReady={this.mapReady}>
         </Map>
       );
