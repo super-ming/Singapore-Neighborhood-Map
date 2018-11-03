@@ -11,7 +11,7 @@ class App extends Component {
 
     this.state = {
       activeMarker: {},
-      allLocations: null,
+      fbResults: null,
       allMarkers: [],
       clickedPlace: [],
       infoWindow: null,
@@ -25,6 +25,21 @@ class App extends Component {
     this.setState({
       query: input,
     }, this.filterList);
+  }
+
+  //when a list item is clicked on, save the item name, show marker for item and hide other markers
+  onListClick = (venue) => {
+    venue = [venue];
+    this.setState({
+      clickedPlace: venue,
+      menuOpen: false
+    })
+    //When setMarkerVisibility runs as a callback in the this.setState function above,
+    //it is still looking at the old this.state.clickedPlace.
+    //Using setTimeout to ensure clickedPlace has been updated.
+    setTimeout(()=> {
+      this.setMarkerVisibility([venue[0]])
+    }, 100)
   }
 
   filterList = ()=>{
@@ -67,20 +82,6 @@ class App extends Component {
       }
     });
   }
-  //when a list item is clicked on, save the item name, show marker for item and hide other markers
-  onListClick = (venue) => {
-    venue = [venue];
-    this.setState({
-      clickedPlace: venue
-    })
-    //Tried calling setMarkerVisibility as a callback in the this.setState function above, but
-    //the new this.state.clickedPlace is still not set by the time setMarkerVisibility runs for some odd
-    //reason. When setMarkerVisibility runs, it is still looking at the old this.state.clickedPlace.
-    //Using setTimeout to ensure clickedPlace has been updated.
-    setTimeout(()=> {
-      this.setMarkerVisibility([venue[0]])
-    }, 100)
-  }
 
   triggerMarkerClick = ()=> {
     this.state.google.maps.event.trigger(this.state.activeMarker, 'click');
@@ -113,7 +114,7 @@ class App extends Component {
     })
   }
 
-  getMarkers = (markers, infoWindow, map, google) => {
+  getMap = (markers, infoWindow, map, google) => {
     this.setState({
       allMarkers: markers,
       infoWindow: infoWindow,
@@ -124,7 +125,7 @@ class App extends Component {
 
   getFbResults = (searchResults) => {
     this.setState({
-      allLocations: searchResults
+      fbResults: searchResults
     })
   }
 
@@ -140,7 +141,7 @@ class App extends Component {
             <VenueList
               className="map-list"
               onListClick={this.onListClick}
-              venuesvenue={this.state.allLocations}
+              venues={this.state.fbResults}
               query={this.state.query}
               updateQuery={this.updateQuery.bind(this)}
             />
@@ -151,9 +152,12 @@ class App extends Component {
           <MapContainer
             ref={"map"}
             className="map-wrapper"
-            states={this.state}
+            fbResults={this.state.fbResults}
+            infoWindow={this.state.infoWindow}
+            allMarkers={this.state.allMarkers}
+            query={this.state.query}
             getFbResults={this.getFbResults}
-            getMarkers={this.getMarkers}
+            getMap={this.getMap}
             onInfoWindowClose={this.onInfoWindowClose}
             onMapClicked={this.onMapClicked}
             onMarkerClick={this.onMarkerClick}
