@@ -37,19 +37,21 @@ class MapContainer extends Component {
         venue.lat = result.location.latitude
         venue.lng = result.location.longitude
         venue.id = result.id
-        venue.rating = result.overall_star_rating
-        if(result.website){
+        if(result.rating) {
+          venue.rating = result.overall_star_rating
+        } else {
+          venue.rating = "No rating provided"
+        }
+        if(result.website) {
           venue.website = result.website
         } else {
           venue.website = result.link
         }
-        venue.visible = true
-        venue.isOpen = false
         venue.index = index
         searchResults.push(venue);
       });
     }).catch(err=> {
-      alert("Facebook Places API is currently unavailable", err);
+      alert("Facebook Places API is currently unavailable. Error: ", err);
     });
     this.props.getFbResults(searchResults);
   }
@@ -68,7 +70,8 @@ class MapContainer extends Component {
         })
         markers.push(marker);
         const infoContent = `<h4>${place.name}</h4><p>Rating: ${place.rating}</p><p>Website: ${place.website}</p>`;
-        marker.addListener('click', ()=>{
+        ['click', 'mouseover'].forEach(e => {
+          marker.addListener(e, ()=> {
           if (marker.getAnimation() !== null) {
             marker.setAnimation(null);
           } else {
@@ -77,12 +80,13 @@ class MapContainer extends Component {
           infoWindow.setContent(infoContent);
           infoWindow.open(map, marker);
           this.props.onMarkerClick(place, marker);
+          }, false);
         });
         infoWindow.addListener('closeclick', ()=>{
           marker.setAnimation(null)
           this.props.onInfoWindowClose()
         })
-      };
+      }
     }
     this.props.getMarkers(markers, infoWindow, map, this.props.google)
   }
