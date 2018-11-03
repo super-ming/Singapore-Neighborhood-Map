@@ -9,7 +9,6 @@ const fbAppID = '2203110406389507'
 const fbAppSecret ='378ed176af2b45d3d7c38f62a82256a0'
 
 class MapContainer extends Component {
-  //from https://github.com/fullstackreact/google-maps-react
   componentDidMount() {
     this.getVenueInfo();
   }
@@ -20,10 +19,10 @@ class MapContainer extends Component {
       this.addMarkers(map);
     }, 1300)
   }
-
+  //fetch nearby restaurant information from Facebook Graph API
   getVenueInfo = () => {
     let searchResults = [];
-    const placeSearchUrl = `https://graph.facebook.com/v3.2/search?type=place&center=1.290604,103.846473&categories=["FOOD_BEVERAGE"]&distance=1000&fields=name, location, overall_star_rating, phone, website, picture, link&access_token=${fbAppID}|${fbAppSecret}`
+    const placeSearchUrl = `https://graph.facebook.com/v3.2/search?type=place&center=1.290604,103.846473&categories=["FOOD_BEVERAGE"]&distance=1000&fields=name, location, overall_star_rating, phone, website, picture, link, checkins, price_range&access_token=${fbAppID}|${fbAppSecret}`
     let headers = new Headers();
     let request = new Request(placeSearchUrl, {
       method: 'GET',
@@ -37,10 +36,20 @@ class MapContainer extends Component {
         venue.lat = result.location.latitude
         venue.lng = result.location.longitude
         venue.id = result.id
-        if(result.rating) {
+        if(result.overall_star_rating) {
           venue.rating = result.overall_star_rating
         } else {
           venue.rating = "No rating provided"
+        }
+        if(result.price_range) {
+          venue.price_range = result.price_range
+        } else {
+          venue.price_range = "No price range provided"
+        }
+        if(result.checkins) {
+          venue.checkins = result.checkins
+        } else {
+          venue.checkins = "None"
         }
         if(result.website) {
           venue.website = result.website
@@ -59,17 +68,18 @@ class MapContainer extends Component {
   addMarkers(map) {
     let markers = [];
     const infoWindow = new this.props.google.maps.InfoWindow();
-    if(this.props.states.allLocations){
-      for (let place of this.props.states.allLocations){
+
+    if(this.props.fbResults){
+      for (let venue of this.props.fbResults){
         const marker = new this.props.google.maps.Marker({
-          position: {lat: place.lat, lng: place.lng},
+          position: {lat: venue.lat, lng: venue.lng},
           map: map,
-          title: place.name,
-          id: place.index,
+          title: venue.name,
+          id: venue.index,
           animation: 2  //Drop
         })
         markers.push(marker);
-        const infoContent = `<h4>${place.name}</h4><p>Rating: ${place.rating}</p><p>Website: ${place.website}</p>`;
+        const infoContent = `<h4>${venue.name}</h4><p>Rating: ${venue.rating}</p><p>Price Range: ${venue.price_range}</p><p>Facebook Check-ins: ${venue.checkins}</p><a href=${venue.website}>Website</a>`;
         ['click', 'mouseover'].forEach(e => {
           marker.addListener(e, ()=> {
           if (marker.getAnimation() !== null) {
@@ -77,9 +87,9 @@ class MapContainer extends Component {
           } else {
             marker.setAnimation(1); //Bounce
           }
-          infoWindow.setContent(infoContent);
-          infoWindow.open(map, marker);
-          this.props.onMarkerClick(place, marker);
+            infoWindow.setContent(infoContent);
+            infoWindow.open(map, marker);
+            this.props.onMarkerClick(venue, marker);
           }, false);
         });
         infoWindow.addListener('closeclick', ()=>{
@@ -88,15 +98,15 @@ class MapContainer extends Component {
         })
       }
     }
-    this.props.getMarkers(markers, infoWindow, map, this.props.google)
+    this.props.getMap(markers, infoWindow, map, this.props.google)
   }
 
   onMapClicked = ()=>{
-    this.props.states.infoWindow.close();
-    this.props.states.allMarkers.forEach(marker=>{
+    this.props.infoWindow.close();
+    this.props.allMarkers.forEach(marker=>{
       marker.setAnimation(null);
     }, this.props.onInfoWindowClose)
-    this.props.updateQuery(this.props.states.query)
+    this.props.updateQuery(this.props.query)
   }
 
   render() {
