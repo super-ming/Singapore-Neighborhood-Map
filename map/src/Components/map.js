@@ -12,10 +12,11 @@ class MapContainer extends Component {
   //from https://github.com/fullstackreact/google-maps-react
   componentDidMount() {
     this.getVenueInfo();
+    console.log("map mounted")
   }
 
   componentDidUpdate(prevProps, prevState) {
-
+console.log(this.props.states.allLocations);
     if (prevProps.google !== this.props.google) {
       //this.initMap();
 
@@ -28,20 +29,22 @@ class MapContainer extends Component {
   mapReady = (props,map) =>{
     //this.getVenueInfo();
     this.addMarkers(map);
+    console.log("map ready")
   }
 
   addMarkers(map) {
     let markers = [];
     const infoWindow = new this.props.google.maps.InfoWindow();
-    console.log(this.props.states.allLocations);
+    console.log(this.props.places);
     if(this.props.states.allLocations){
-      this.props.states.allLocations.forEach((place, index) =>{
-        console.log("place");
+      console.log("allLocations exist");
+      for (let place of this.props.states.allLocations){
+
         const marker = new this.props.google.maps.Marker({
           position: {lat: place.lat, lng: place.lng},
           map: map,
           title: place.name,
-          id: index,
+          //id: index,
           animation: 2  //Drop
         })
         markers.push(marker);
@@ -54,18 +57,16 @@ class MapContainer extends Component {
           }
           infoWindow.setContent(infoContent);
           infoWindow.open(map, marker);
-          this.props.onMarkerClick(place, marker, index);
+          this.props.onMarkerClick(place, marker);
         });
         infoWindow.addListener('closeclick', ()=>{
           marker.setAnimation(null)
           this.props.onInfoWindowClose()
         })
-      });
+      };
     } else {
       console.log("what")
     }
-
-
     this.props.getMarkers(markers, infoWindow, map, this.props.google)
   }
 
