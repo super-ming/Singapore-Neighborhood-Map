@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import './App.css';
-import './Styles/burgermenu.css';
+import './Styles/App.css';
 import { slide as Menu } from 'react-burger-menu';
 import MapContainer from './Components/map'
 import VenueList from './Components/venuelist'
