@@ -152,10 +152,10 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <nav className="App-header">
+        <nav className="App-header" role="navigation">
           <h1>Neighborhood Map</h1>
           <div tabIndex="0">
-          <Menu noOverlay isOpen={this.state.menuOpen}
+          <Menu noOverlay isOpen={this.state.menuOpen} tabIndex={0}
             className="burger-menu"
             width={300} >
             <VenueList
