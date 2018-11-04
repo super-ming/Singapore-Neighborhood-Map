@@ -48,7 +48,7 @@ class App extends Component {
 
   filterList = ()=>{
     const queryUpperCase = this.state.query.toUpperCase();
-    const items = document.querySelectorAll(".list-item");
+    const items = document.querySelectorAll(".item");
     let visiblePlaces = [];
     items.forEach(item => {
       //if text entered matches item from list, show item. If not, hide the item.
@@ -91,7 +91,7 @@ class App extends Component {
     this.state.google.maps.event.trigger(this.state.activeMarker, 'click');
   }
 
-  onMarkerClick = (props, marker) => {
+  onMarkerClick = (props, marker, infoWindow) => {
     this.state.allMarkers.forEach((mkr)=>{
       if(marker.title !== mkr.title){
         mkr.setAnimation(null);
@@ -100,6 +100,7 @@ class App extends Component {
     this.setState({
       activeMarker: marker,
       clickedPlace: props,
+      infoWindow: infoWindow,
       menuOpen: false,
       showingInfoWindow: true
     });
@@ -124,7 +125,8 @@ class App extends Component {
       activeMarker: {},
       clickedPlace: null,
       infoWindow: null,
-      showingInfoWindow: false
+      menuOpen: false,
+      showingInfoWindow: false,
     }, this.showAllMarkers)
   }
 
