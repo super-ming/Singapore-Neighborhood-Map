@@ -106,20 +106,6 @@ class App extends Component {
     });
   }
 
-  onMapClicked = (props) => {
-    if (this.state.showingInfoWindow) {
-      this.setState({
-        activeMarker: null,
-        menuOpen: false,
-        showingInfoWindow: false
-      })
-    } else {
-      this.setState({
-        menuOpen: false
-      })
-    }
-  }
-
   onInfoWindowClose = () => {
     this.setState({
       activeMarker: {},
