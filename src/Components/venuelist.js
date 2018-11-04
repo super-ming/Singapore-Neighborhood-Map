@@ -4,7 +4,7 @@ const VenueList = (props) => {
   const venues = props.venues;
   return (
     <div>
-    <label htmlFor="searchBox">Search Box</label>
+    <label className="label" htmlFor="searchBox">Search Box</label>
       <input
         id="searchBox"
         type="text"
@@ -12,14 +12,18 @@ const VenueList = (props) => {
         value={props.query}
         onChange={event => props.updateQuery(event.target.value)}
         onKeyUp={event => props.updateQuery(event.target.value)}/>
-      <div className="place-list">
+      <ul className="venue-list">
       { venues && (venues.map((venue, index) =>
-        <div
-          className="list-item"
-          name={venue.name} key={index}
-          onClick={event => props.onListClick(venue, index)}>{venue.name} </div>
+        <li className="list-item" key={index}>
+          <button
+            className="item"
+            name={venue.name}
+            key={index}
+            onClick={event => props.onListClick(venue, index)}>{venue.name}
+          </button>
+        </li>
       ))}
-      </div>
+      </ul>
     </div>
   );
 }
