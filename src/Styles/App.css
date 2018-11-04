@@ -3,7 +3,7 @@
 }
 
 .App-header {
-  background-color: #054bd7;
+  background-color: #3D5B99;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -29,6 +29,10 @@
   top: 15px;
 }
 
+.bm-burger-button:focus {
+  color: black;
+}
+
 /* Color/shape of burger icon bars */
 .bm-burger-bars {
   background: #ffffff;
@@ -48,7 +52,7 @@
 /* General sidebar styles */
 .bm-menu {
   background: #373a47;
-  padding: 2.5em 0 0;
+  padding: 10px 0 0;
   font-size: 1.15em;
   width: 90%;
 }
@@ -86,21 +90,41 @@
   font-size: 36px;
 }
 
+.venue-list {
+  padding-left: 0;
+  margin: 20px 1px 0 1px;
+}
+
 .list-item {
   font-size: 15px;
-  padding: 15px;
+  list-style-type: none;
+}
+
+button:hover {
+  background-color: #b82a2a;
+}
+
+button:focus {
+  background-color: #b82a2a;
+}
+
+.item {
+  width: 100%;
+  height: 52.5px;
+  padding: 0;
   border-width: 0.5px 1px 0px 1px;
   border-style: solid;
   border-color: #dfe748;
+  background: #373a47;
+  color: white;
 }
-
-.list-item:hover {
-  background-color:
-}
-
 
 div.list-item:last-child {
   border-bottom: 1px solid #dfe748;
+}
+
+.label {
+  font-size: 20px;
 }
 
 #searchBox {
