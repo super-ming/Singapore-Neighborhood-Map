@@ -4,7 +4,7 @@
 
 This application uses React and Google Maps API to display a map of a neighborhood in
 Singapore. It performs a search for nearby restaurants and returns information
-about the restaurant using Facebook Graph API.
+about the restaurant using Facebook Places Graph API.
 
 ## Features
 
@@ -25,19 +25,8 @@ Therefore, the default service worker only works in production build.
 app and visit the Basic Settings page to obtain your App ID and App Secret.
 * Clone the repository to your working directory:
 * Install all project dependencies with `npm install`
-* Navigate to the src folder and create a JavaScript file that contains a export function. The function should
-return an object containing your Google API, Facebook App ID, and Facebook App Secret.
-
-#### Example
-``` export function storeAPI() {
-  let config = {
-    googleMapsAPI : 'AIzaSyAf45ANMw2zw1FHJAkn47m5dAQjK-MawRk',
-    fbAppID : '2203110406389507',
-    fbAppSecret: '378ed176af2b45d3d7c38f62a82256a0'
-  }
-  return config
-}
-```
+* In the Components folder, open map.js and replace the values of fbAppID, fbAppSecret, and googleMapsAPI
+variables with your own keys. Save your changes.
 
 In the project directory, you can run:
 
