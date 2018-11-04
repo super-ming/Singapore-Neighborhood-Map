@@ -1,24 +1,26 @@
 import React, { Component } from 'react';
-import {Map, GoogleApiWrapper} from 'google-maps-react';
-import ErrorBoundary from './errorboundary'
+import { Map, GoogleApiWrapper } from 'google-maps-react';
+import ErrorBoundary from './errorboundary';
+import { storeAPI } from '../config';
 
 window.gm_authFailure = ()=>{
-  alert("Invalid Google API key. Please check your Google API key")
-}
+  alert("Invalid Google API key. Please check your Google API key");
+};
 
-const fbAppID = '2203110406389507'
-const fbAppSecret ='378ed176af2b45d3d7c38f62a82256a0'
+const fbAppID = storeAPI().fbAppID;
+const fbAppSecret = storeAPI().fbAppSecret;
+const googleMapsAPI = storeAPI().googleMapsAPI;
 
 class MapContainer extends Component {
   componentDidMount() {
     this.getVenueInfo();
   }
 
-  mapReady = (props,map) =>{
+  mapReady = (props,map) => {
     //setTimeout is added to ensure that data from API is available in order to create the markers.
-    setTimeout(()=> {
+    setTimeout(() => {
       this.addMarkers(map);
-    }, 1300)
+    }, 1300);
   }
   //fetch nearby restaurant information from Facebook Graph API
   getVenueInfo = () => {
@@ -38,36 +40,36 @@ class MapContainer extends Component {
       }}).then(res => {
       res.data.forEach((result, index)=> {
         let venue = {};
-        venue.name = result.name
-        venue.lat = result.location.latitude
-        venue.lng = result.location.longitude
-        venue.id = result.id
+        venue.name = result.name;
+        venue.lat = result.location.latitude;
+        venue.lng = result.location.longitude;
+        venue.id = result.id;
         if(result.overall_star_rating) {
-          venue.rating = result.overall_star_rating
+          venue.rating = result.overall_star_rating;
         } else {
-          venue.rating = "No rating provided"
+          venue.rating = "No rating provided";
         }
         if(result.price_range) {
-          venue.price_range = result.price_range
+          venue.price_range = result.price_range;
         } else {
-          venue.price_range = "No price range provided"
+          venue.price_range = "No price range provided";
         }
         if(result.checkins) {
-          venue.checkins = result.checkins
+          venue.checkins = result.checkins;
         } else {
-          venue.checkins = "None"
+          venue.checkins = "None";
         }
         if(result.website) {
-          venue.website = result.website
+          venue.website = result.website;
         } else {
-          venue.website = result.link
+          venue.website = result.link;
         }
-        venue.index = index
+        venue.index = index;
         searchResults.push(venue);
       });
     }).catch(err=> {
       alert("Something went wrong with Facebook Places API. Error: "+ err);
-    });
+    })
     this.props.getFbResults(searchResults);
   }
 
@@ -83,7 +85,7 @@ class MapContainer extends Component {
           title: venue.name,
           id: venue.index,
           animation: 2  //Drop
-        })
+        });
         markers.push(marker);
         const infoContent = `<h4>${venue.name}</h4><p>Rating: ${venue.rating}</p><p>Price Range: ${venue.price_range}</p><p>Facebook Check-ins: ${venue.checkins}</p><a href=${venue.website}>Website</a>`;
         ['click', 'mouseover'].forEach(e => {
@@ -99,16 +101,16 @@ class MapContainer extends Component {
           }, false);
         });
         marker.addListener('mouseout', ()=>{
-          marker.setAnimation(null)
-          this.props.onInfoWindowClose()
+          marker.setAnimation(null);
+          this.props.onInfoWindowClose();
         })
         infoWindow.addListener('closeclick', ()=>{
-          marker.setAnimation(null)
-          this.props.onInfoWindowClose()
+          marker.setAnimation(null);
+          this.props.onInfoWindowClose();
         })
       }
     }
-    this.props.getMap(markers, infoWindow, map, this.props.google)
+    this.props.getMap(markers, infoWindow, map, this.props.google);
   }
 
   onMapClicked = ()=>{
@@ -118,7 +120,7 @@ class MapContainer extends Component {
     this.props.allMarkers.forEach(marker=>{
       marker.setAnimation(null);
     }, this.props.onInfoWindowClose)
-    this.props.updateQuery(this.props.query)
+    this.props.updateQuery(this.props.query);
   }
 
   render() {
@@ -136,7 +138,7 @@ class MapContainer extends Component {
             zoom={15}>
           </Map>
         </ErrorBoundary>
-      );
+      )
     } else {
       return(
         <div>Error loading Google Maps</div>
@@ -146,6 +148,5 @@ class MapContainer extends Component {
 }
 
 export default GoogleApiWrapper({
-  apiKey: ('AIzaSyAf45ANMw2zw1FHJAkn47m5dAQjK-MawRk'),
-  libraries: ['places']
+  apiKey: (`${googleMapsAPI}`)
 })(MapContainer)
