@@ -12,7 +12,7 @@ class App extends Component {
       activeMarker: {},
       fbResults: null,
       allMarkers: [],
-      clickedPlace: [],
+      clickedPlace: null,
       infoWindow: null,
       map: null,
       menuOpen: false,
@@ -68,21 +68,20 @@ class App extends Component {
   }
 
   setMarkerVisibility = (venue) => {
-    this.state.allMarkers.find((marker) => {
+    this.state.allMarkers.find(marker => {
       //If list item hasn't been clicked, show markers currently visible on list
       if (venue.includes(marker.title.trim())){
         return marker.setVisible(true);
       } else if (this.state.clickedPlace){
         //If list item is clicked, show corresponding marker
-        if ([venue[0].name].includes(marker.title.trim())){
-          this.setState({
-            activeMarker: marker
-          })
-          marker.setVisible(true);
-          return this.triggerMarkerClick();
-        } else {
-          return marker.setVisible(false);
-        }
+          if ([venue[0].name].includes(marker.title.trim())){
+            this.setState({
+              activeMarker: marker
+            })
+            return this.triggerMarkerClick();
+          } else {
+            return false
+          }
       } else {
         return marker.setVisible(false);
       }
@@ -124,14 +123,15 @@ class App extends Component {
   onInfoWindowClose = () => {
     this.setState({
       activeMarker: {},
-      clickedPlace: {},
+      clickedPlace: null,
+      infoWindow: null,
       showingInfoWindow: false
     }, this.showAllMarkers)
   }
 
   showAllMarkers = ()=> {
     this.state.allMarkers.forEach(marker => {
-      marker.setVisible = true
+      marker.setVisible(true)
     })
   }
 
