@@ -10,21 +10,21 @@ about the restaurant using Facebook Places Graph API.
 
 Each restaurant is indicated by a marker on the map. An info window with
 available information about the restaurant can be activated by click or mouse
-over of the marker. Clicking on the hamburger button opens a draw displaying a
+over of the marker. Clicking on the hamburger button opens a drawer displaying a
 list view of the restaurants. A text box is available for the user to filter the
 list via text input. Clicking on a list item will display the corresponding
-marker and info window.
+info window.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 Therefore, the default service worker only works in production build.
 
 ## Setup
 
-* Follow these [instructions](https://developers.google.com/maps/documentation/javascript/get-api-key) on getting your own Google API key
+* Follow these [instructions](https://developers.google.com/maps/documentation/javascript/get-api-key) on getting your own Google API key.
 * Visit [here](https://developers.facebook.com/) to create a Facebook for Developers account. Create a new
 app and visit the Basic Settings page to obtain your App ID and App Secret.
-* Clone the repository to your working directory:
-* Install all project dependencies with `npm install`
+* Clone this repository to your working directory.
+* Install all project dependencies with `npm install`.
 * In the Components folder, open map.js and replace the values of fbAppID, fbAppSecret, and googleMapsAPI
 variables with your own keys. Save your changes.
 
