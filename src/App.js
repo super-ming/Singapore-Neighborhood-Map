@@ -42,7 +42,7 @@ class App extends Component {
     //it is still looking at the old this.state.clickedPlace.
     //Using setTimeout to ensure clickedPlace has been updated.
     setTimeout(()=> {
-      this.setMarkerVisibility([venue[0]])
+      this.setMarkerVisibility([venue[0]]);
     }, 100)
   }
 
@@ -96,7 +96,7 @@ class App extends Component {
       if(marker.title !== mkr.title){
         mkr.setAnimation(null);
       }
-    })
+    });
     this.setState({
       activeMarker: marker,
       clickedPlace: props,
@@ -118,8 +118,8 @@ class App extends Component {
 
   showAllMarkers = ()=> {
     this.state.allMarkers.forEach(marker => {
-      marker.setVisible(true)
-    })
+      marker.setVisible(true);
+    });
   }
 
   getMap = (markers, infoWindow, map, google) => {
