@@ -1,8 +1,12 @@
-#Neighborhood Map
+# Neighborhood Map
 
-This application uses Google Maps API to display a map of a neighborhood in
+## Overview
+
+This application uses React and Google Maps API to display a map of a neighborhood in
 Singapore. It performs a search for nearby restaurants and returns information
 about the restaurant using Facebook Graph API.
+
+## Features
 
 Each restaurant is indicated by a marker on the map. An info window with
 available information about the restaurant can be activated by click or mouse
@@ -12,8 +16,9 @@ list via text input. Clicking on a list item will display the corresponding
 marker and info window.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Therefore, the default service worker only works in production build.
 
-## How to Run
+## Setup
 
 * Clone the repository to your working directory:
 * Install all project dependencies with `npm install`
