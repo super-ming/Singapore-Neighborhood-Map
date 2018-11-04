@@ -95,7 +95,7 @@ class MapContainer extends Component {
           }
             infoWindow.setContent(infoContent);
             infoWindow.open(map, marker);
-            this.props.onMarkerClick(venue, marker);
+            this.props.onMarkerClick(venue, marker, infoWindow);
           }, false);
         });
         marker.addListener('mouseout', ()=>{
@@ -112,7 +112,9 @@ class MapContainer extends Component {
   }
 
   onMapClicked = ()=>{
-    this.props.infoWindow.close();
+    if(this.props.infoWindow){
+      this.props.infoWindow.close();
+    }
     this.props.allMarkers.forEach(marker=>{
       marker.setAnimation(null);
     }, this.props.onInfoWindowClose)
