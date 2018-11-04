@@ -33,7 +33,7 @@ class MapContainer extends Component {
 
     fetch(request).then(res => {
       if (!res.ok) {
-        alert(res.statusText);
+        throw Error (`Request rejected with status code ${res.status}`);
       } else {
         return res.json()
       }}).then(res => {
@@ -67,7 +67,7 @@ class MapContainer extends Component {
         searchResults.push(venue);
       });
     }).catch(err=> {
-      alert("Something went wrong with Facebook Places API. Error: "+ err);
+      alert("Something went wrong with Facebook Places API."+ err);
     })
     this.props.getFbResults(searchResults);
   }
