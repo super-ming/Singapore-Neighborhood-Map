@@ -7,7 +7,6 @@ import VenueList from './Components/venuelist'
 class App extends Component {
   constructor(props) {
     super(props);
-    document.title = "Neighborhood Map with Facebook API";
     this.state = {
       activeMarker: {},
       fbResults: null,
