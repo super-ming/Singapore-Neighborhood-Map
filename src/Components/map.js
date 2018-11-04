@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import { Map, GoogleApiWrapper } from 'google-maps-react';
 import ErrorBoundary from './errorboundary';
-import { storeAPI } from '../config';
 
 window.gm_authFailure = ()=>{
   alert("Invalid Google API key. Please check your Google API key");
 };
 
-const fbAppID = storeAPI().fbAppID;
-const fbAppSecret = storeAPI().fbAppSecret;
-const googleMapsAPI = storeAPI().googleMapsAPI;
+const fbAppID = 'INSERT YOUR FACEBOOK APP ID HERE'
+const fbAppSecret = 'INSERT YOUR FACEBOOK APP SECRET HERE'
+const googleMapsAPI = 'INSERT YOUR GOOGLE API KEY HERE'
 
 class MapContainer extends Component {
   componentDidMount() {
