@@ -1,13 +1,13 @@
 {
-  "main.css": "/super-ming/Neighborhood-Map/static/css/main.76c3bc7c.chunk.css",
-  "main.js": "/super-ming/Neighborhood-Map/static/js/main.05968e4b.chunk.js",
-  "main.js.map": "/super-ming/Neighborhood-Map/static/js/main.05968e4b.chunk.js.map",
-  "static/js/1.2d52335f.chunk.js": "/super-ming/Neighborhood-Map/static/js/1.2d52335f.chunk.js",
-  "static/js/1.2d52335f.chunk.js.map": "/super-ming/Neighborhood-Map/static/js/1.2d52335f.chunk.js.map",
-  "runtime~main.js": "/super-ming/Neighborhood-Map/static/js/runtime~main.8e0c17a2.js",
-  "runtime~main.js.map": "/super-ming/Neighborhood-Map/static/js/runtime~main.8e0c17a2.js.map",
-  "static/css/main.76c3bc7c.chunk.css.map": "/super-ming/Neighborhood-Map/static/css/main.76c3bc7c.chunk.css.map",
-  "index.html": "/super-ming/Neighborhood-Map/index.html",
-  "precache-manifest.5fc9587a4c94c4e78dc751299662d9ea.js": "/super-ming/Neighborhood-Map/precache-manifest.5fc9587a4c94c4e78dc751299662d9ea.js",
-  "service-worker.js": "/super-ming/Neighborhood-Map/service-worker.js"
+  "main.css": "/Neighborhood-Map/static/css/main.76c3bc7c.chunk.css",
+  "main.js": "/Neighborhood-Map/static/js/main.f077af44.chunk.js",
+  "main.js.map": "/Neighborhood-Map/static/js/main.f077af44.chunk.js.map",
+  "static/js/1.2d52335f.chunk.js": "/Neighborhood-Map/static/js/1.2d52335f.chunk.js",
+  "static/js/1.2d52335f.chunk.js.map": "/Neighborhood-Map/static/js/1.2d52335f.chunk.js.map",
+  "runtime~main.js": "/Neighborhood-Map/static/js/runtime~main.d5023807.js",
+  "runtime~main.js.map": "/Neighborhood-Map/static/js/runtime~main.d5023807.js.map",
+  "static/css/main.76c3bc7c.chunk.css.map": "/Neighborhood-Map/static/css/main.76c3bc7c.chunk.css.map",
+  "index.html": "/Neighborhood-Map/index.html",
+  "precache-manifest.f5ec30701803d724465b03fad46c7d60.js": "/Neighborhood-Map/precache-manifest.f5ec30701803d724465b03fad46c7d60.js",
+  "service-worker.js": "/Neighborhood-Map/service-worker.js"
 }
