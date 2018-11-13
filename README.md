@@ -15,9 +15,6 @@ list view of the restaurants. A text box is available for the user to filter the
 list via text input. Clicking on a list item will display the corresponding
 info window.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-Therefore, the default service worker only works in production build.
-
 ## Setup
 
 * Follow these [instructions](https://developers.google.com/maps/documentation/javascript/get-api-key) on getting your own Google API key.
@@ -37,6 +34,16 @@ Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.<br>
 You will also see any lint errors in the console.
+
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Therefore, the default service worker only works in production build.
+
+To run a production build in the project directory :
+
+### `npm run build`
+### `serve -s build`
+
+This will run on http://localhost:5000.
 
 ## Dependencies
 
