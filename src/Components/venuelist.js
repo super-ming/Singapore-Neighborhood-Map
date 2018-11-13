@@ -11,7 +11,7 @@ const VenueList = (props) => {
         placeholder="Type here to filter locations"
         value={props.query}
         onChange={event => props.updateQuery(event.target.value)}
-        onKeyUp={event => props.updateQuery(event.target.value)}/>
+      />
       <ul className="venue-list">
       { venues && (venues.map((venue, index) =>
         <li className="list-item" key={index}>

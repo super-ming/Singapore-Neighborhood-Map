@@ -28,7 +28,7 @@ class App extends Component {
     this.setState({
       query: input,
       menuOpen: true
-    }, this.filterList);
+    }, this.filterList(input));
   }
 
   //when a list item is clicked on, save the item name, show marker for item and hide other markers
@@ -46,8 +46,8 @@ class App extends Component {
     }, 100)
   }
 
-  filterList = ()=>{
-    const queryUpperCase = this.state.query.toUpperCase();
+  filterList = (input)=>{
+    const queryUpperCase = input.toUpperCase();
     const items = document.querySelectorAll(".item");
     let visiblePlaces = [];
     items.forEach(item => {
@@ -141,7 +141,7 @@ class App extends Component {
     return (
       <div className="App">
         <nav className="App-header" role="navigation">
-          <h1>Neighborhood Map</h1>
+          <h1>Singapore Restaurants</h1>
           <div tabIndex="0">
           <Menu noOverlay isOpen={this.state.menuOpen} tabIndex={0}
             className="burger-menu"
