@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import { Map, GoogleApiWrapper } from 'google-maps-react';
 import ErrorBoundary from './errorboundary';
-import { storeAPI } from '../config';
 
 window.gm_authFailure = ()=>{
   alert("Invalid Google API key. Please check your Google API key");
 };
 
-const fbAppID = storeAPI().fbAppID;
-const fbAppSecret = storeAPI().fbAppSecret;
-const googleMapsAPI = storeAPI().googleMapsAPI;
+const fbAppID = process.env.REACT_APP_fbAppID;
+const fbAppSecret = process.env.REACT_APP_fbAppSecret;
+const googleMapsAPI = process.env.REACT_APP_googleMapsAPI;
 
 class MapContainer extends Component {
   componentDidMount() {
@@ -25,7 +24,7 @@ class MapContainer extends Component {
   //fetch nearby restaurant information from Facebook Graph API
   getVenueInfo = () => {
     let searchResults = [];
-    const placeSearchUrl = `https://graph.facebook.com/v3.2/search?type=place&center=1.290604,103.846473&categories=["FOOD_BEVERAGE"]&distance=1000&fields=name, location, overall_star_rating, phone, website, picture, link, checkins, price_range&access_token=${fbAppID}|${fbAppSecret}`
+    const placeSearchUrl = `https://graph.facebook.com/v3.2/search?type=place&center=1.290604,103.846473&categories=%5B%22FOOD_BEVERAGE%22%5D&distance=1000&fields=name,location,overall_star_rating,phone,website,picture,link,checkins,price_range&access_token=${fbAppID}|${fbAppSecret}`
     let headers = new Headers();
     let request = new Request(placeSearchUrl, {
       method: 'GET',
