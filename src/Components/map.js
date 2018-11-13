@@ -7,9 +7,9 @@ window.gm_authFailure = ()=>{
   alert("Invalid Google API key. Please check your Google API key");
 };
 
-const fbAppID = storeAPI().fbAppID;
-const fbAppSecret = storeAPI().fbAppSecret;
-const googleMapsAPI = storeAPI().googleMapsAPI;
+const fbAppID = process.env.fbAppID;
+const fbAppSecret = process.env.fbAppSecret;
+const googleMapsAPI = process.env.googleMapsAPI;
 
 class MapContainer extends Component {
   componentDidMount() {
