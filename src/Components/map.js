@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Map, GoogleApiWrapper } from 'google-maps-react';
 import ErrorBoundary from './errorboundary';
-import { storeAPI } from '../config';
 
 window.gm_authFailure = ()=>{
   alert("Invalid Google API key. Please check your Google API key");
@@ -13,7 +12,6 @@ const googleMapsAPI = process.env.REACT_APP_googleMapsAPI;
 
 class MapContainer extends Component {
   componentDidMount() {
-    console.log(fbAppID);
     this.getVenueInfo();
   }
 
@@ -27,6 +25,7 @@ class MapContainer extends Component {
   getVenueInfo = () => {
     let searchResults = [];
     const placeSearchUrl = `https://graph.facebook.com/v3.2/search?type=place&center=1.290604,103.846473&categories=["FOOD_BEVERAGE"]&distance=1000&fields=name, location, overall_star_rating, phone, website, picture, link, checkins, price_range&access_token=${fbAppID}|${fbAppSecret}`
+    console.log(placeSearchUrl);
     let headers = new Headers();
     let request = new Request(placeSearchUrl, {
       method: 'GET',
