@@ -13,6 +13,8 @@ const googleMapsAPI = process.env.googleMapsAPI;
 
 class MapContainer extends Component {
   componentDidMount() {
+    console.log(process.env);
+    console.log(fbAppID);
     this.getVenueInfo();
   }
 
