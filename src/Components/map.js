@@ -24,7 +24,7 @@ class MapContainer extends Component {
   //fetch nearby restaurant information from Facebook Graph API
   getVenueInfo = () => {
     let searchResults = [];
-    const placeSearchUrl = `https://graph.facebook.com/v3.2/search?type=place&center=1.290604,103.846473&categories=%5B%22FOOD_BEVERAGE%22%5D&distance=1000&fields=name,location,overall_star_rating,phone,website,link,checkins,price_range&access_token=${fbAppID}|${fbAppSecret}`
+    const placeSearchUrl = `https://graph.facebook.com/v3.2/search?type=place&center=1.290604,103.846473&categories=%5B%22FOOD_BEVERAGE%22%5D&distance=1000&fields=name,location,overall_star_rating,phone,website,link,checkins,price_range&access_token=${fbAppID}|${fbAppSecret}`;
     let headers = new Headers();
     let request = new Request(placeSearchUrl, {
       method: 'GET',
